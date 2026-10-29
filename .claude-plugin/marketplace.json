@@ -1,0 +1,13 @@
+{
+  "name": "claude-koikoi",
+  "description": "ツール呼び出しで CPU 同士の花札こいこいが進む Claude Code の mod",
+  "owner": {
+    "name": "amazake13"
+  },
+  "plugins": [
+    {
+      "name": "koikoi",
+      "source": "./mod"
+    }
+  ]
+}

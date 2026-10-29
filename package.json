@@ -1,0 +1,23 @@
+{
+  "name": "koikoi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Claude Code のツール呼び出しで CPU 同士の花札こいこいが進む常駐ビューア",
+  "main": "dist/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && electron .",
+    "sim": "node scripts/build.mjs sim && node dist/sim.js",
+    "cards": "esbuild --bundle --platform=node scripts/cardsheet.ts --outfile=dist/cardsheet.js --log-level=warning && node dist/cardsheet.js cards.png",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "electron": "^45.1.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.5"
+  }
+}

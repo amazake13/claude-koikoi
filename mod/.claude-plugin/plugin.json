@@ -1,0 +1,8 @@
+{
+  "name": "koikoi",
+  "version": "0.1.0",
+  "description": "ツール呼び出しのたびに、別ウインドウで CPU 同士の花札こいこいが一手進む",
+  "author": {
+    "name": "amazake13"
+  }
+}
