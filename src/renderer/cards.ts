@@ -1,5 +1,5 @@
 import { CARDS, type Card } from '../engine'
-import { ART, paint } from './art'
+import { ART, ICON_CROP, ICON_H, ICON_W, paint } from './art'
 import type { Color } from './palette'
 import { Pixmap } from './pixmap'
 
@@ -36,6 +36,26 @@ export function back(): Pixmap {
   return p
 }
 
+export const ICON_FULL_W = ICON_W + 2
+export const ICON_FULL_H = ICON_H + 2
+
+// 取り札のアイコン。縮小せず、大きい札の絵の一部をそのまま切り出す
+export function icon(c: Card, big = face(c)): Pixmap {
+  const p = new Pixmap(ICON_FULL_W, ICON_FULL_H)
+  const [cx, cy] = ICON_CROP[c.id]
+  for (let y = 0; y < ICON_H; y++) for (let x = 0; x < ICON_W; x++) p.px(x + 1, y + 1, big.get(cx + x + 1, cy + y + 1))
+  const border = c.kind === 'light' ? 'kin' : 'ink'
+  for (let x = 0; x < p.w; x++) {
+    p.px(x, 0, border)
+    p.px(x, p.h - 1, border)
+  }
+  for (let y = 0; y < p.h; y++) {
+    p.px(0, y, border)
+    p.px(p.w - 1, y, border)
+  }
+  return p
+}
+
 export interface CardSprites {
   big: HTMLCanvasElement[]
   mini: HTMLCanvasElement[]
@@ -44,19 +64,13 @@ export interface CardSprites {
 }
 
 export function buildCards(): CardSprites {
-  const shrink = (p: Pixmap) => {
-    const m = p.half(['shiro', 'sumi', 'beni'])
-    for (let x = 0; x < m.w; x++) {
-      m.px(x, 0, 'ink')
-      m.px(x, m.h - 1, 'ink')
-    }
-    for (let y = 0; y < m.h; y++) {
-      m.px(0, y, 'ink')
-      m.px(m.w - 1, y, 'ink')
-    }
-    return m.toCanvas()
-  }
-  const faces = CARDS.map(face)
+  const faces = CARDS.map(c => face(c))
   const b = back()
-  return { big: faces.map(f => f.toCanvas()), mini: faces.map(shrink), back: b.toCanvas(), backMini: shrink(b) }
+  const backMini = b.half(['beni'])
+  return {
+    big: faces.map(f => f.toCanvas()),
+    mini: CARDS.map((c, i) => icon(c, faces[i]).toCanvas()),
+    back: b.toCanvas(),
+    backMini: backMini.toCanvas(),
+  }
 }

@@ -1,5 +1,7 @@
 # claude-koikoi
 
+![ツール呼び出しで進むこいこい。トラがこいこいし、シズが猪鹿蝶で勝負する](docs/demo.gif)
+
 Claude Code がツールを呼ぶたびに、CPU 同士の花札こいこいが一手進む常駐ウインドウ。
 GBA 風の 240×160 のドット絵を整数倍で表示する。くすんだ和色で、札48枚はすべてドットで描いている。
 
@@ -82,6 +84,7 @@ npm test                  # ルールと対局のテスト
 npm run sim -- 42         # シード 42 で1局を文字で流す
 npm run cards             # 札48枚を cards.png に並べる
 KOIKOI_DIR=/tmp/kk KOIKOI_SHOT=/tmp/shot npm start   # 別の置き場所で起動し、一定間隔でスクリーンショット
+KOIKOI_SEED=7 ...                                     # 新しい対局のシードを決める (7 は1月にこいこいと猪鹿蝶が出る)
 ```
 
 | 場所 | 中身 |

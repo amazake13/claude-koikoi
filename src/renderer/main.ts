@@ -24,11 +24,12 @@ const STEP = 17
 const PANEL_Y = [105, 1]
 const DECK = { x: 152, y: 46 }
 const MSG_Y = 134
+// need は役になる枚数。枚数をその横に出し、届いたら金色にする
 const CAP_GROUPS = [
-  { kind: 'light', x: 4, w: 22 },
-  { kind: 'seed', x: 28, w: 32 },
-  { kind: 'ribbon', x: 62, w: 32 },
-  { kind: 'chaff', x: 96, w: 44 },
+  { kind: 'light', x: 4, w: 24, need: 0 },
+  { kind: 'seed', x: 30, w: 26, need: 5 },
+  { kind: 'ribbon', x: 66, w: 26, need: 5 },
+  { kind: 'chaff', x: 102, w: 28, need: 10 },
 ] as const
 
 interface Place {
@@ -113,6 +114,11 @@ function slotPos(k: number) {
   return { x: 4 + (i % 8) * STEP + over * 3, y: FIELD_Y[Math.floor(i / 8)] + over * 3 }
 }
 
+function capX(g: (typeof CAP_GROUPS)[number], i: number, n: number) {
+  const step = n <= 1 ? 0 : Math.min(5, (g.w - 8) / (n - 1))
+  return Math.round(g.x + i * step)
+}
+
 function layout(s: GameState): Map<number, Place> {
   const places = new Map<number, Place>()
   syncSlots(s.field)
@@ -121,8 +127,7 @@ function layout(s: GameState): Map<number, Place> {
     ;[...s.hands[seat]].sort((a, b) => a - b).forEach((id, i) => places.set(id, { x: 4 + i * STEP, y: HAND_Y[seat], face: true, mini: false, z: 1 }))
     for (const g of CAP_GROUPS) {
       const ids = s.captured[seat].filter(id => card(id).kind === g.kind)
-      const step = ids.length <= 1 ? 0 : Math.min(5, (g.w - 8) / (ids.length - 1))
-      ids.forEach((id, i) => places.set(id, { x: Math.round(g.x + i * step), y: CAP_Y[seat], face: true, mini: true, z: 2 + i / 100 }))
+      ids.forEach((id, i) => places.set(id, { x: capX(g, i, ids.length), y: CAP_Y[seat], face: true, mini: true, z: 2 + i / 100 }))
     }
   }
   return places
@@ -388,6 +393,15 @@ function drawCenter(s: GameState) {
   text(ctx, `${s.stats.games + 1}局目`, 186, 78, 'washi2')
 }
 
+function drawCounts(s: GameState) {
+  for (const seat of SEATS)
+    for (const g of CAP_GROUPS) {
+      if (!g.need) continue
+      const n = s.captured[seat].filter(id => card(id).kind === g.kind).length
+      if (n > 0) text(ctx, String(n), capX(g, n - 1, n) + 9, CAP_Y[seat] + 2, n >= g.need ? 'kin' : 'washi2')
+    }
+}
+
 function drawMessage() {
   frameBox(0, MSG_Y, W, H - MSG_Y)
   let budget = shown
@@ -441,6 +455,7 @@ function draw() {
     drawCenter(state)
     const list = [...sprites.values()].sort((a, b) => currentPlace(a).z - currentPlace(b).z)
     for (const s of list) drawSprite(s)
+    drawCounts(state)
   }
   drawMessage()
   if (cutin) drawCutIn(cutin)

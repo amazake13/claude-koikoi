@@ -48,7 +48,7 @@ if (!app.requestSingleInstanceLock()) {
 
 function start() {
   mkdirSync(TICKS, { recursive: true })
-  game = readJson<GameState>(GAME) ?? newGame(Date.now())
+  game = readJson<GameState>(GAME) ?? newGame(Number(process.env.KOIKOI_SEED ?? Date.now()))
   prefs = { ...prefs, ...readJson<Prefs>(PREFS) }
   // mod がビューアを起動するときに使う
   writeFileSync(LAUNCH, JSON.stringify({ argv: [process.execPath, app.getAppPath()] }))
@@ -97,7 +97,8 @@ function shoot(prefix: string) {
   let n = 0
   setInterval(async () => {
     const img = await win!.webContents.capturePage()
-    writeFileSync(`${prefix}-${n++}.png`, img.toPNG())
+    // 撮った時刻を名前に入れて、GIF にするときのコマの長さに使う
+    writeFileSync(`${prefix}-${String(n++).padStart(5, '0')}-${Date.now()}.png`, img.toPNG())
   }, Number(process.env.KOIKOI_SHOT_MS ?? 1500))
 }
 

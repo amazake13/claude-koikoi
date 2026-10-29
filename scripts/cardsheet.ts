@@ -3,7 +3,7 @@ import { writeFileSync } from 'node:fs'
 import { deflateSync } from 'node:zlib'
 import { CARDS } from '../src/engine'
 import { ART, ART_H, ART_W } from '../src/renderer/art'
-import { CARD_H, CARD_W, back, face } from '../src/renderer/cards'
+import { CARD_H, CARD_W, back, face, icon } from '../src/renderer/cards'
 import { RGB } from '../src/renderer/palette'
 import type { Pixmap } from '../src/renderer/pixmap'
 
@@ -39,7 +39,7 @@ for (const c of CARDS) {
   blit(f, col * (CARD_W + gap) * scale, row * (CARD_H + gap) * scale, scale)
   // 実際の画面と同じ倍率 (等倍の3倍) での見え方
   blit(f, (4 * (CARD_W + gap) + col * (CARD_W + gap)) * scale, row * (CARD_H + gap) * scale, 3)
-  blit(f.half(['shiro', 'sumi', 'beni']), (4 * (CARD_W + gap) + col * (CARD_W + gap)) * scale, (row * (CARD_H + gap) + 15) * scale, 3)
+  blit(icon(c, f), (4 * (CARD_W + gap) + col * (CARD_W + gap)) * scale, (row * (CARD_H + gap) + 15) * scale, 3)
 }
 blit(back(), 8 * (CARD_W + gap) * scale, 0, scale)
 
